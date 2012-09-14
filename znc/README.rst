@@ -18,7 +18,6 @@ to run on and add some pillar data::
         nickname1:
           password_hash: sha256#hexdigest#salt#
           real_name: Your Name
-          vhost: example.com
           quit_msg: Cool story bro
           server_host: chat.freenode.net
           server_port: 6667
