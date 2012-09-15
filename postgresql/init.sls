@@ -21,3 +21,14 @@ postgresql:
     - enable: True
     - watch:
       - file: postgresql
+      - file: postgresql-recovery
+
+postgresql-recovery:
+  file.managed:
+    - name: /etc/postgresql/9.1/main/recovery.conf
+    - source: salt://postgresql/recovery.conf
+    - template: jinja
+    - user: postgres
+    - group: postgres
+    - require:
+      - pkg: postgresql
