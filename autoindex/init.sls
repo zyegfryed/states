@@ -29,7 +29,7 @@ autoindex-requirements:
     - source: salt://autoindex/requirements.txt
     - template: jinja
     - defaults:
-        autoindex_version: 0.1
+      autoindex_version: 0.1
     - require:
       - file: autoindex
 
