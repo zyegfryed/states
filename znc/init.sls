@@ -59,7 +59,7 @@ znc-cert:
 znc-init:
   file.managed:
     - name: /etc/init/znc.conf
-    - source: salt://znc/upstart.conf
+    - source: salt://znc/service.conf
     - require:
       - file: znc-initd
 
