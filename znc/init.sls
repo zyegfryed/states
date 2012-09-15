@@ -1,9 +1,7 @@
 znc:
-  user:
-    - present
+  user.present:
     - gid_from_name: True
-  pkg:
-    - installed
+  pkg.installed:
     - require:
       - user: znc
   file.managed:
@@ -14,8 +12,8 @@ znc:
     - group: znc
     - require:
       - file: znc-configs-dir
-  service:
-    - running
+  service.running:
+    - enable: True
     - watch:
       - file: znc-init
     - require:
