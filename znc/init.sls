@@ -60,7 +60,6 @@ znc-init:
   file.managed:
     - name: /etc/init/znc.conf
     - source: salt://znc/upstart.conf
-    - template: jinja
     - require:
       - file: znc-initd
 
