@@ -14,7 +14,7 @@ To use it, just include ``autoindex`` on a minion and put in the pillar data::
       packages:
         - Django
         - Fabric
-        - etc. etc.
+        - etc.
 
 If you want ``autoindex`` to report to Sentry, set ``autoindex.sentry_dsn``::
 

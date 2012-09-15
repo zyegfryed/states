@@ -3,16 +3,21 @@ include:
   - nginx
 
 autoindex:
+  user.present:
+    - gid_from_name: True
   file.directory:
-    - name: /home/{{ pillar['user'] }}/autoindex
-    - user: {{ pillar['user'] }}
+    - name: /var/lib/autoindex
+    - user: autoindex
+    - group: autoindex
+    - require:
+      - user: autoindex
   virtualenv.managed:
-    - name: /home/{{ pillar['user'] }}/autoindex/env
+    - name: /opt/autoindex
     - require:
       - file: autoindex
   cmd.wait:
-    - name: env/bin/pip install -U pip; env/bin/pip install -r requirements.txt
-    - cwd: /home/{{ pillar['user'] }}/autoindex
+    - name: bin/pip install -U pip; bin/pip install -r requirements.txt
+    - cwd: /opt/autoindex
     - require:
       - virtualenv: autoindex
     - watch:
@@ -20,10 +25,9 @@ autoindex:
 
 autoindex-requirements:
   file.managed:
-    - name: /home/{{ pillar['user'] }}/autoindex/requirements.txt
+    - name: /opt/autoindex/requirements.txt
     - source: salt://autoindex/requirements.txt
     - template: jinja
-    - user: {{ pillar['user'] }}
     - defaults:
         autoindex_version: 0.1
     - require:
@@ -31,33 +35,45 @@ autoindex-requirements:
 
 autoindex-public:
   file.directory:
-    - name: /home/{{ pillar['user'] }}/autoindex/public
+    - name: /var/lib/autoindex/public
     - recurse:
       - user
-    - user: {{ pillar['user'] }}
+    - user: autoindex
+    - require:
+      - file: autoindex
+      - user: autoindex
 
 autoindex-mirror:
   file.managed:
-    - name: /home/{{ pillar['user'] }}/autoindex/public/mirror
+    - name: /var/lib/autoindex/public/mirror
     - source: salt://autoindex/mirror
-    - user: {{ pillar['user'] }}
+    - user: autoindex
     - template: jinja
     - require:
       - file: autoindex-public
   cmd.wait:
-    - name: env/bin/autoindex mirror -d public
-    - cwd: /home/{{ pillar['user'] }}/autoindex
-    - user: {{ pillar['user'] }}
+    - name: autoindex mirror -d /var/lib/autoindex/public
+    - cwd: /opt/autoindex/bin
+    - user: autoindex
     - require:
       - cmd: autoindex-watch
     - watch:
       - file: autoindex-mirror
+
+autoindex-log:
+  file.directory:
+    - name: /var/log/autoindex
+    - user: autoindex
+    - require:
+      - user: autoindex
 
 autoindex-watch:
   file.managed:
     - name: /etc/supervisor/conf.d/autoindex-watch.conf
     - source: salt://autoindex/watch.conf
     - template: jinja
+    - require:
+      - file: autoindex-log
   cmd.wait:
     - name: supervisorctl update
     - watch:
