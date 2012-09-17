@@ -1,23 +1,27 @@
 include:
   - supervisor
   - nginx
+  - virtualenv
+  {% if not pillar['index_url'] %}- git{% endif %}
 
 autoindex:
   user.present:
     - gid_from_name: True
   file.directory:
-    - name: /var/lib/autoindex
+    - name: /srv/www/autoindex
     - user: autoindex
     - group: autoindex
+    - makedirs: True
     - require:
       - user: autoindex
   virtualenv.managed:
-    - name: /opt/autoindex
+    - name: /srv/www/autoindex
+    - no_site_packages: True
     - require:
       - file: autoindex
   cmd.wait:
     - name: bin/pip install -U pip; bin/pip install -r requirements.txt
-    - cwd: /opt/autoindex
+    - cwd: /srv/www/autoindex
     - require:
       - virtualenv: autoindex
     - watch:
@@ -25,7 +29,7 @@ autoindex:
 
 autoindex-requirements:
   file.managed:
-    - name: /opt/autoindex/requirements.txt
+    - name: /srv/www/autoindex/requirements.txt
     - source: salt://autoindex/requirements.txt
     - template: jinja
     - defaults:
@@ -35,7 +39,7 @@ autoindex-requirements:
 
 autoindex-public:
   file.directory:
-    - name: /var/lib/autoindex/public
+    - name: /srv/www/autoindex/public
     - recurse:
       - user
     - user: autoindex
@@ -45,15 +49,15 @@ autoindex-public:
 
 autoindex-mirror:
   file.managed:
-    - name: /var/lib/autoindex/public/mirror
+    - name: /srv/www/autoindex/public/mirror
     - source: salt://autoindex/mirror
     - user: autoindex
     - template: jinja
     - require:
       - file: autoindex-public
   cmd.wait:
-    - name: autoindex mirror -d /var/lib/autoindex/public
-    - cwd: /opt/autoindex/bin
+    - name: bin/autoindex mirror -d /srv/www/autoindex/public
+    - cwd: /srv/www/autoindex
     - user: autoindex
     - require:
       - cmd: autoindex-watch
@@ -94,6 +98,7 @@ autoindex-server:
     - template: jinja
     - require:
       - pkg: nginx
+      - file: autoindex-public
 
 autoindex-symlink:
   file.symlink:

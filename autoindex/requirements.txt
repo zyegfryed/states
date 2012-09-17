@@ -1,2 +1,5 @@
-{% if pillar['index_url'] %}--index-url={{ pillar['index_url'] }}{% endif %}
+{% if pillar['index_url'] %}--index-url={{ pillar['index_url'] }}
 autoindex=={{ autoindex_version }}
+{% else %}
+-e git://github.com/brutasse/autoindex.git#egg=autoindex
+{% endif %}
