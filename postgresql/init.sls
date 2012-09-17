@@ -30,5 +30,18 @@ postgresql-recovery:
     - template: jinja
     - user: postgres
     - group: postgres
+    - defaults:
+      archivedir: {{ pillar['archivedir']|default('/mnt/server/archivedir') }}
     - require:
       - pkg: postgresql
+
+postgresql-archivedir:
+  file.managed:
+    - name: {{ pillar['archivedir']|default('/mnt/server/archivedir') }}
+    - user: postgres
+    - group: postgres
+    - mode: 750
+    - makedirs: True
+    - recurse:
+      - user
+      - group

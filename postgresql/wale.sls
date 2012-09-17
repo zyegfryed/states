@@ -20,6 +20,8 @@ wal-e:
     - recurse:
       - user
       - group
+    - require:
+      - virtualenv: wal-e
 
 wal-e-deps:
   pkg.installed:
@@ -31,8 +33,16 @@ extend:
   postgresql:
     file:
       - defaults:
-          wal_e: True
-          wal_e_command: envdir /etc/wal-e.d/env /opt/wal-e/bin/wal-e
+        wal_e: True
+        wal_e_command: envdir /etc/wal-e.d/env /opt/wal-e/bin/wal-e
+  postgresql-recovery:
+    file:
+      - defaults:
+        wal_e: True
+        wal_e_command: envdir /etc/wal-e.d/env /opt/wal-e/bin/wal-e
+  postgresql-archivedir:
+    file:
+      - absent
 
 {% for key, value in pillar['postgresql']['env'].iteritems() %}
 wal-e-{{ key }}:
