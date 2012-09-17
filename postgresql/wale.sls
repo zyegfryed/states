@@ -40,9 +40,6 @@ extend:
       - defaults:
         wal_e: True
         wal_e_command: envdir /etc/wal-e.d/env /opt/wal-e/bin/wal-e
-  postgresql-archivedir:
-    file:
-      - absent
 
 {% for key, value in pillar['postgresql']['env'].iteritems() %}
 wal-e-{{ key }}:
